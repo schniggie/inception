@@ -78,6 +78,7 @@ var (
 	https         bool
 	caseSensitive bool
 	noProgressBar bool
+	proxy         string
 )
 
 var (
@@ -238,6 +239,7 @@ func request(domain string, provider Provider) []error {
 				TLSClientConfig(&tls.Config{InsecureSkipVerify: true}).
 				Timeout(time.Second*10).
 				CustomMethod(method, URL).
+				Proxy(proxy).
 				Set("Referer", scheme+domain+"/").
 				Set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36").
 				Send(provider.Body).
@@ -269,6 +271,7 @@ func request(domain string, provider Provider) []error {
 				Timeout(time.Second*10).
 				Set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36").
 				CustomMethod(method, URL).
+				Proxy(proxy).
 				CustomHeader(pHeaders). //added this method this gorequest library ... need to fork that library and import in this project so that everone pulling this could use it
 				Send(provider.Body).
 				End()
@@ -468,6 +471,7 @@ func main() {
 	flag.BoolVar(&https, "https", false, "force https (works only if scheme is not provided in domain list")
 	flag.BoolVar(&caseSensitive, "caseSensitive", false, "case sensitive checks")
 	flag.BoolVar(&noProgressBar, "noProgressBar", false, "hide progress bar")
+	flag.StringVar(&proxy,"proxy","","use proxy, eg. http://127.0.0.1:8080")
 	flag.Parse()
 
 	printIfNotSilent(`
